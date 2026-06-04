@@ -1300,6 +1300,53 @@ The following provider options are available:
   model ID as a string if needed.
 </Note>
 
+### Transcription Models (Chirp)
+
+You can transcribe audio with Google Cloud [Chirp](https://docs.cloud.google.com/speech-to-text/docs/models/chirp-3)
+speech-to-text models using the `.transcription()` factory method together with
+[`transcribe()`](/docs/reference/ai-sdk-core/transcribe).
+
+```ts
+import { googleVertex } from '@ai-sdk/google-vertex';
+import { experimental_transcribe as transcribe } from 'ai';
+import { readFile } from 'fs/promises';
+
+const result = await transcribe({
+  model: googleVertex.transcription('chirp_2'),
+  audio: await readFile('audio.wav'),
+});
+```
+
+Chirp authenticates with the same Google Cloud credentials as the other Vertex
+models but calls the regional Cloud Speech-to-Text endpoints. Set
+`GOOGLE_VERTEX_LOCATION` (or `providerOptions.googleVertex.region`) to a
+Speech-to-Text region: `chirp_2` is available in `us-central1`, `europe-west4`,
+and `asia-southeast1`; `chirp_3` in the `us` and `eu` multi-regions. There is no
+global endpoint, and these regions differ from Vertex AI regions.
+
+The synchronous API transcribes audio under one minute. The spoken language is
+auto-detected by default; pass `languageCodes` to restrict it.
+
+```ts
+const result = await transcribe({
+  model: googleVertex.transcription('chirp_3'),
+  audio: await readFile('audio.wav'),
+  providerOptions: {
+    googleVertex: {
+      region: 'us',
+      languageCodes: ['en-US'],
+    },
+  },
+});
+```
+
+#### Transcription Model Capabilities
+
+| Model     | Word timestamps     | Auto language detection |
+| --------- | ------------------- | ----------------------- |
+| `chirp_2` | <Check size={18} /> | <Check size={18} />     |
+| `chirp_3` | <Check size={18} /> | <Check size={18} />     |
+
 ## Google Vertex Anthropic Provider Usage
 
 The Google Vertex Anthropic provider for the [AI SDK](/docs) offers support for Anthropic's Claude models through the Google Vertex AI APIs. This section provides details on how to set up and use the Google Vertex Anthropic provider.

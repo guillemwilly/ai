@@ -4,6 +4,7 @@ import type {
   ImageModelV4,
   LanguageModelV4,
   ProviderV4,
+  TranscriptionModelV4,
 } from '@ai-sdk/provider';
 import {
   generateId,
@@ -24,6 +25,8 @@ import { GoogleVertexImageModel } from './google-vertex-image-model';
 import type { GoogleVertexImageModelId } from './google-vertex-image-settings';
 import type { GoogleVertexModelId } from './google-vertex-options';
 import { googleVertexTools } from './google-vertex-tools';
+import { GoogleVertexTranscriptionModel } from './google-vertex-transcription-model';
+import type { GoogleVertexTranscriptionModelId } from './google-vertex-transcription-model-options';
 import { GoogleVertexVideoModel } from './google-vertex-video-model';
 import type { GoogleVertexVideoModelId } from './google-vertex-video-settings';
 
@@ -83,6 +86,20 @@ export interface GoogleVertexProvider extends ProviderV4 {
    * Creates a model for video generation.
    */
   videoModel(modelId: GoogleVertexVideoModelId): Experimental_VideoModelV4;
+
+  /**
+   * Creates a model for transcription (speech-to-text) using Chirp.
+   */
+  transcription(
+    modelId: GoogleVertexTranscriptionModelId,
+  ): TranscriptionModelV4;
+
+  /**
+   * Creates a model for transcription (speech-to-text) using Chirp.
+   */
+  transcriptionModel(
+    modelId: GoogleVertexTranscriptionModelId,
+  ): TranscriptionModelV4;
 }
 
 export interface GoogleVertexProviderSettings {
@@ -227,6 +244,22 @@ export function createGoogleVertex(
       generateId: options.generateId ?? generateId,
     });
 
+  // Chirp (Cloud Speech-to-Text) reuses the Vertex auth headers from
+  // createConfig, but targets a regional `{region}-speech.googleapis.com`
+  // endpoint built from the project + location.
+  const createTranscriptionModel = (
+    modelId: GoogleVertexTranscriptionModelId,
+  ) => {
+    const config = createConfig('transcription');
+    return new GoogleVertexTranscriptionModel(modelId, {
+      provider: config.provider,
+      headers: config.headers,
+      fetch: config.fetch,
+      project: loadGoogleVertexProject(),
+      location: loadGoogleVertexLocation(),
+    });
+  };
+
   const provider = function (modelId: GoogleVertexModelId) {
     if (new.target) {
       throw new Error(
@@ -245,6 +278,8 @@ export function createGoogleVertex(
   provider.imageModel = createImageModel;
   provider.video = createVideoModel;
   provider.videoModel = createVideoModel;
+  provider.transcription = createTranscriptionModel;
+  provider.transcriptionModel = createTranscriptionModel;
   provider.tools = googleVertexTools;
 
   return provider;

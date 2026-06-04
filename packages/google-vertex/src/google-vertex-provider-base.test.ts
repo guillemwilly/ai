@@ -5,6 +5,7 @@ import { GoogleLanguageModel } from '@ai-sdk/google/internal';
 import { GoogleVertexEmbeddingModel } from './google-vertex-embedding-model';
 import { GoogleVertexImageModel } from './google-vertex-image-model';
 import { GoogleVertexVideoModel } from './google-vertex-video-model';
+import { GoogleVertexTranscriptionModel } from './google-vertex-transcription-model';
 
 // Mock the imported modules
 vi.mock('@ai-sdk/provider-utils', async importOriginal => {
@@ -54,6 +55,10 @@ vi.mock('./google-vertex-image-model', () => ({
 
 vi.mock('./google-vertex-video-model', () => ({
   GoogleVertexVideoModel: vi.fn(),
+}));
+
+vi.mock('./google-vertex-transcription-model', () => ({
+  GoogleVertexTranscriptionModel: vi.fn(),
 }));
 
 describe('google-vertex-provider-base', () => {
@@ -108,6 +113,37 @@ describe('google-vertex-provider-base', () => {
         baseURL:
           'https://test-location-aiplatform.googleapis.com/v1beta1/projects/test-project/locations/test-location/publishers/google',
       }),
+    );
+  });
+
+  it('should create a transcription model with correct settings', () => {
+    const provider = createGoogleVertex({
+      project: 'test-project',
+      location: 'us-central1',
+    });
+    provider.transcription('chirp_2');
+
+    expect(GoogleVertexTranscriptionModel).toHaveBeenCalledWith(
+      'chirp_2',
+      expect.objectContaining({
+        provider: 'google.vertex.transcription',
+        project: 'test-project',
+        location: 'us-central1',
+        headers: expect.any(Function),
+      }),
+    );
+  });
+
+  it('should create a transcription model via transcriptionModel()', () => {
+    const provider = createGoogleVertex({
+      project: 'test-project',
+      location: 'us-central1',
+    });
+    provider.transcriptionModel('chirp_3');
+
+    expect(GoogleVertexTranscriptionModel).toHaveBeenCalledWith(
+      'chirp_3',
+      expect.objectContaining({ provider: 'google.vertex.transcription' }),
     );
   });
 
