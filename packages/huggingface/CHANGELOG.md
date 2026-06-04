@@ -1,5 +1,13 @@
 # @ai-sdk/huggingface
 
+## 2.0.0-canary.53
+
+### Patch Changes
+
+- Updated dependencies [ee798eb]
+  - @ai-sdk/provider-utils@5.0.0-canary.45
+  - @ai-sdk/openai-compatible@3.0.0-canary.53
+
 ## 2.0.0-canary.52
 
 ### Patch Changes

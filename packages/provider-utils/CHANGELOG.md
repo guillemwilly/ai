@@ -1,5 +1,11 @@
 # @ai-sdk/provider-utils
 
+## 5.0.0-canary.45
+
+### Patch Changes
+
+- ee798eb: chore(provider-utils): rename `Experimental_Sandbox` to `Experimental_SandboxSession`
+
 ## 5.0.0-canary.44
 
 ### Patch Changes
